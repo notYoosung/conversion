@@ -24,7 +24,13 @@ end
 
 for _, raw_mc_list in ipairs(mc_lists) do
     if raw_mc_list ~= nil and mcl ~= nil and matched ~= nil and unmatched ~= nil then
-        local mc_list = raw_mc_list:read("*a")
+        local temp_mc_list = split(raw_mc_list:read("*a"), "\n")
+        local mc_list = {}
+        for _, v in ipairs(temp_mc_list) do
+            mc_list[v] = v
+            -- print(v)
+        end
+
         -- o:write(i_read)
         local patterns = {}
         
@@ -45,6 +51,11 @@ for _, raw_mc_list in ipairs(mc_lists) do
                     match = (line_split[2] or "") .. "_" .. (line_split[1] or ""),
                     cond = #line_split == 2,
                     -- output = "",
+                },
+                {
+                    match = line:gsub("mcl_", ""),
+                    -- cond = not line:match("copper"),
+                    -- output = "%1",
                 },
                 {
                     match = un_mcl_line,
@@ -89,12 +100,12 @@ for _, raw_mc_list in ipairs(mc_lists) do
                     -- output = "%1",
                 },
                 {
-                    match = line:gsub("mcl_boats_(.*)", "$1"),
+                    match = line:gsub("mcl_boats_(.*)", "%1"),
                     -- cond = ,
                     -- output = "%1",
                 },
                 {
-                    match = line:gsub("mcl_compass_", ""),
+                    match = line:gsub("mcl_compass_(.*)", "%1"),
                     -- cond = ,
                     -- output = "%1",
                 },
@@ -103,11 +114,13 @@ for _, raw_mc_list in ipairs(mc_lists) do
                     cond = #line_split == 2,
                     -- output = "",
                 },
-                {
-                    match = line:gsub("default_tool_", ""),
-                    -- cond = ,
-                    -- output = "",
-                },
+                { match = line:gsub("default_tool_wood", "wood_"), },
+                { match = line:gsub("default_tool_stone", "stone_"), },
+                { match = line:gsub("default_tool_steel", "steel_"), },
+                { match = line:gsub("default_tool_gold", "gold_"), },
+                { match = line:gsub("default_tool_diamond", "diamond_"), },
+                { match = line:gsub("default_tool_netherite", "netherite_"), },
+                { match = line:gsub("xpanes_top_iron", "iron_bars"), },
             }
             local found_match = false
             if line:match("mcmeta") then goto skip end
@@ -116,15 +129,23 @@ for _, raw_mc_list in ipairs(mc_lists) do
                 if not cond then
                     goto continue
                 end
-                local match = mc_list:match("" .. pattern.match .. "%.png")
-                local output = match--pattern.output or match or ""
-                if match == nil then
-                    -- print(pattern.match)
-                    goto continue
+                local match = nil
+                for k2, v2 in pairs(mc_list) do
+                    if k2:match(pattern.match .. "%.png") then
+                        match = mc_list[pattern.match .. ".png"]
+                        -- print(match)
+                        break
+                    elseif pattern.match:match("compass") and v2:match("compass") then
+                        print(pattern.match .. ", " .. k2 .. "")
+                    end
                 end
-                matched:write("\"" .. line .. "\", \"" .. output .. "\"\n")
-                found_match = true
-                break
+                if match ~= nil then
+                    -- print(pattern.match)
+                    local output = match--pattern.output or match or ""
+                    matched:write("\"" .. line .. ".png\", \"" .. output .. "\"\n")
+                    found_match = true
+                    break
+                end
                 ::continue::
             end
             if not found_match then
