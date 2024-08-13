@@ -21,6 +21,7 @@ if mc ~= nil and mcl ~= nil and matched ~= nil and unmatched ~= nil then
     local patterns = {}
     
     for line in mcl:lines() do
+
         local un_mcl_line = line:gsub("(mcl_%a-_)", "")
         local line_split = split(line, "_")
         local un_mcl_line_split = split(line:gsub("(mcl_%a-_)", ""), "_")
@@ -37,12 +38,17 @@ if mc ~= nil and mcl ~= nil and matched ~= nil and unmatched ~= nil then
             },
             {
                 match = un_mcl_line,
-                -- cond = #line_split == 2,
+                cond = not line:match("copper"),
                 -- output = "%1",
             },
             {
                 match = (un_mcl_line_split[2] or "") .. "_" .. (un_mcl_line_split[1] or ""),
                 cond = #un_mcl_line_split == 2,
+                -- output = "",
+            },
+            {
+                match = line:gsub("mcl_copper_", "copper_"),
+                -- cond = ,
                 -- output = "",
             },
             -- {
@@ -51,21 +57,24 @@ if mc ~= nil and mcl ~= nil and matched ~= nil and unmatched ~= nil then
             --     -- output = "",
             -- },
         }
-
+        local found_match = false
         for _, pattern in ipairs(patterns) do
             local cond = pattern.cond == nil or pattern.cond == true
             if not cond then
-                unmatched:write("\"" .. line .. "\"\n")
+                goto continue
             end
             local match = mc_list:match("" .. pattern.match)
-            local output = pattern.output or match or ""
+            local output = match--pattern.output or match or ""
             if match == nil then
-                unmatched:write("\"" .. line .. "\"\n")
                 goto continue
             end
             matched:write("\"" .. line .. "\", \"" .. output .. "\"\n")
+            found_match = true
             break
             ::continue::
+        end
+        if not found_match then
+            unmatched:write("\"" .. line .. "\"\n")
         end
         -- o:write(line .. "\n")
 
