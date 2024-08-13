@@ -23,6 +23,7 @@ if mc ~= nil and mcl ~= nil and matched ~= nil and unmatched ~= nil then
     for line in mcl:lines() do
         local un_mcl_line = line:gsub("(mcl_%a-_)", "")
         local line_split = split(line, "_")
+        local un_mcl_line_split = split(line:gsub("(mcl_%a-_)", ""), "_")
         patterns = {
             {
                 match = line,
@@ -39,6 +40,11 @@ if mc ~= nil and mcl ~= nil and matched ~= nil and unmatched ~= nil then
                 -- cond = #line_split == 2,
                 -- output = "%1",
             },
+            {
+                match = (un_mcl_line_split[2] or "") .. "_" .. (un_mcl_line_split[1] or ""),
+                cond = #un_mcl_line_split == 2,
+                -- output = "",
+            },
             -- {
             --     match = "mcl_%a+_" .. line_split[2] .. "_" .. line_split[1],
             --     cond = #line_split == 2,
@@ -47,10 +53,10 @@ if mc ~= nil and mcl ~= nil and matched ~= nil and unmatched ~= nil then
         }
 
         for _, pattern in ipairs(patterns) do
-            -- local cond = pattern.cond == nil or pattern.cond == true
-            -- if not cond then
-            --     unmatched:write("\"" .. line .. "\"\n")
-            -- end
+            local cond = pattern.cond == nil or pattern.cond == true
+            if not cond then
+                unmatched:write("\"" .. line .. "\"\n")
+            end
             local match = mc_list:match("" .. pattern.match)
             local output = pattern.output or match or ""
             if match == nil then
