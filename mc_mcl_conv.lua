@@ -29,7 +29,7 @@ for _, raw_mc_list in ipairs(mc_lists) do
         local patterns = {}
         
         for line in mcl:lines() do
-            line = line:gsub("\\.png", "")
+            line = line:gsub("%.png", "")
             local un_mcl_line = line:gsub("(mcl_[a-z]-_)", "")
             local un_default_line = line:gsub("(default_)", "")
             local line_split = split(line, "_")
@@ -57,35 +57,47 @@ for _, raw_mc_list in ipairs(mc_lists) do
                     -- output = "",
                 },
                 {
+                    match = (un_mcl_line_split[2] or "") ..
+                    "_" .. (un_mcl_line_split[3] or "") .. "_" .. (un_mcl_line_split[1] or ""),
+                    cond = #un_mcl_line_split == 3,
+                    -- output = "",
+                },
+                {
                     match = line:gsub("mcl_copper_", "copper_"),
                     -- cond = ,
                     -- output = "",
                 },
                 {
-                    match = line:gsub("xpanes_top_glass_(.-)", function (s)
+                    match = line:gsub("xpanes_top_glass_(.+)%.png", function (s)
+                        print(s)
                         return s .. "_stained_glass"
                     end)
                 },
-                {
-                    match = un_default_line,
-                    -- cond = ,
-                    -- output = "%1",
-                },
-                {
-                    match = line:gsub("mcl_potions_effect_", ""),
-                    -- cond = ,
-                    -- output = "",
-                },
-                {
-                    match = un_farming_line,
-                    -- cond = ,
-                    -- output = "%1",
-                },
-                {
-                    match = line:gsub("(mcl_boats_)", ""),
-                    -- cond = ,
-                    -- output = "%1",
-                },
+                -- {
+                --     match = un_default_line,
+                --     -- cond = ,
+                --     -- output = "%1",
+                -- },
+                -- {
+                --     match = line:gsub("mcl_potions_effect_", ""),
+                --     -- cond = ,
+                --     -- output = "",
+                -- },
+                -- {
+                --     match = un_farming_line,
+                --     -- cond = ,
+                --     -- output = "%1",
+                -- },--]]
+                -- {
+                --     match = line:gsub("mcl_boats_(.*)", "$1"),
+                --     -- cond = ,
+                --     -- output = "%1",
+                -- },
+                -- {
+                --     match = line:gsub("mcl_compass_", ""),
+                --     -- cond = ,
+                --     -- output = "%1",
+                -- },
                 -- {
                 --     match = "mcl_%a+_" .. line_split[2] .. "_" .. line_split[1],
                 --     cond = #line_split == 2,
@@ -99,9 +111,10 @@ for _, raw_mc_list in ipairs(mc_lists) do
                 if not cond then
                     goto continue
                 end
-                local match = mc_list:match("" .. pattern.match)
+                local match = mc_list:match("" .. pattern.match .. "%.png")
                 local output = match--pattern.output or match or ""
                 if match == nil then
+                    -- print(pattern.match)
                     goto continue
                 end
                 matched:write("\"" .. line .. "\", \"" .. output .. "\"\n")
