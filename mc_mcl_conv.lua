@@ -21,8 +21,9 @@ if mc ~= nil and mcl ~= nil and matched ~= nil and unmatched ~= nil then
     local patterns = {}
     
     for line in mcl:lines() do
-
+        line = line:gsub("\\.png", "")
         local un_mcl_line = line:gsub("(mcl_%a-_)", "")
+        local un_default_line = line:gsub("(default_)", "")
         local line_split = split(line, "_")
         local un_mcl_line_split = split(line:gsub("(mcl_%a-_)", ""), "_")
         patterns = {
@@ -50,6 +51,16 @@ if mc ~= nil and mcl ~= nil and matched ~= nil and unmatched ~= nil then
                 match = line:gsub("mcl_copper_", "copper_"),
                 -- cond = ,
                 -- output = "",
+            },
+            {
+                match = line:gsub("xpanes_top_glass_(.-)", function (s)
+                    return s .. "_stained_glass"
+                end)
+            },
+            {
+                match = un_default_line,
+                -- cond = ,
+                -- output = "%1",
             },
             -- {
             --     match = "mcl_%a+_" .. line_split[2] .. "_" .. line_split[1],
