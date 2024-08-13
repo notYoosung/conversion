@@ -68,8 +68,8 @@ for _, raw_mc_list in ipairs(mc_lists) do
                     -- output = "",
                 },
                 {
-                    match = line:gsub("xpanes_top_glass_(.+)%.png", function (s)
-                        print(s)
+                    match = line:gsub("xpanes_top_glass_(.+)", function (s)
+                        -- print(s)
                         return s .. "_stained_glass"
                     end)
                 },
@@ -101,6 +101,11 @@ for _, raw_mc_list in ipairs(mc_lists) do
                 {
                     match = #line_split == 2 and "mcl_%a+_" .. line_split[2] .. "_" .. line_split[1],
                     cond = #line_split == 2,
+                    -- output = "",
+                },
+                {
+                    match = line:gsub("default_tool_", ""),
+                    -- cond = ,
                     -- output = "",
                 },
             }
