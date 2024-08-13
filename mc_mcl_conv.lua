@@ -73,36 +73,36 @@ for _, raw_mc_list in ipairs(mc_lists) do
                         return s .. "_stained_glass"
                     end)
                 },
-                -- {
-                --     match = un_default_line,
-                --     -- cond = ,
-                --     -- output = "%1",
-                -- },
-                -- {
-                --     match = line:gsub("mcl_potions_effect_", ""),
-                --     -- cond = ,
-                --     -- output = "",
-                -- },
-                -- {
-                --     match = un_farming_line,
-                --     -- cond = ,
-                --     -- output = "%1",
-                -- },--]]
-                -- {
-                --     match = line:gsub("mcl_boats_(.*)", "$1"),
-                --     -- cond = ,
-                --     -- output = "%1",
-                -- },
-                -- {
-                --     match = line:gsub("mcl_compass_", ""),
-                --     -- cond = ,
-                --     -- output = "%1",
-                -- },
-                -- {
-                --     match = "mcl_%a+_" .. line_split[2] .. "_" .. line_split[1],
-                --     cond = #line_split == 2,
-                --     -- output = "",
-                -- },
+                {
+                    match = un_default_line,
+                    -- cond = ,
+                    -- output = "%1",
+                },
+                {
+                    match = line:gsub("mcl_potions_effect_", ""),
+                    -- cond = ,
+                    -- output = "",
+                },
+                {
+                    match = un_farming_line,
+                    -- cond = ,
+                    -- output = "%1",
+                },
+                {
+                    match = line:gsub("mcl_boats_(.*)", "$1"),
+                    -- cond = ,
+                    -- output = "%1",
+                },
+                {
+                    match = line:gsub("mcl_compass_", ""),
+                    -- cond = ,
+                    -- output = "%1",
+                },
+                {
+                    match = #line_split == 2 and "mcl_%a+_" .. line_split[2] .. "_" .. line_split[1],
+                    cond = #line_split == 2,
+                    -- output = "",
+                },
             }
             local found_match = false
             if line:match("mcmeta") then goto skip end
