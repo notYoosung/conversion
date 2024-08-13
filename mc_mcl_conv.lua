@@ -15,13 +15,13 @@ local function split(inputstr, sep)
     return t
 end
 
-if mc ~= nil and mcl ~= nil and o ~= nil then
+if mc ~= nil and mcl ~= nil and matched ~= nil and unmatched ~= nil then
     local mc_list = mc:read("*a")
     -- o:write(i_read)
     local patterns = {}
     
     for line in mcl:lines() do
-        local un_mcl_line = line:gsub("(mcl_%a+_)", 1)
+        local un_mcl_line = line:gsub("(mcl_%a-_)", "")
         local line_split = split(line, "_")
         patterns = {
             {
@@ -47,18 +47,22 @@ if mc ~= nil and mcl ~= nil and o ~= nil then
         }
 
         for _, pattern in ipairs(patterns) do
-            local cond = pattern.cond == nil or pattern.cond == true
-            if not cond then goto match_unsuccessful end
+            -- local cond = pattern.cond == nil or pattern.cond == true
+            -- if not cond then
+            --     unmatched:write("\"" .. line .. "\"\n")
+            -- end
             local match = mc_list:match("" .. pattern.match)
-            local output = pattern.output or match
-            if match == nil then goto match_unsuccessful end
+            local output = pattern.output or match or ""
+            if match == nil then
+                unmatched:write("\"" .. line .. "\"\n")
+                goto continue
+            end
             matched:write("\"" .. line .. "\", \"" .. output .. "\"\n")
-            goto continue
-            ::match_unsuccessful::
-            unmatched:write("\"" .. line .. "\"\n")
+            break
             ::continue::
         end
         -- o:write(line .. "\n")
+
     end
     
     mc:close()
