@@ -8,6 +8,7 @@ local mc_lists = {
     open_mc_list("blocks"),
     open_mc_list("mob_effect"),
     open_mc_list("item"),
+    open_mc_list("entity"),
 }
 
 -- https://stackoverflow.com/a/7615129
@@ -30,7 +31,6 @@ for _, raw_mc_list in ipairs(mc_lists) do
             mc_list[v] = v
             -- print(v)
         end
-
         -- o:write(i_read)
         local patterns = {}
         
@@ -41,6 +41,7 @@ for _, raw_mc_list in ipairs(mc_lists) do
             local line_split = split(line, "_")
             local un_mcl_line_split = split(line:gsub("(mcl_%a-_)", ""), "_")
             local un_farming_line = line:gsub("(farming_)", "")
+            -- print(mc_list[line:gsub("mobs_mc_(.*)", "%1") .. ".png"])
             patterns = {
                 {
                     match = line,
@@ -121,6 +122,7 @@ for _, raw_mc_list in ipairs(mc_lists) do
                 { match = line:gsub("default_tool_diamond", "diamond_"), },
                 { match = line:gsub("default_tool_netherite", "netherite_"), },
                 { match = line:gsub("xpanes_top_iron", "iron_bars"), },
+                { match = line:gsub("mobs_mc_(.*)", "%1"), },
             }
             local found_match = false
             if line:match("mcmeta") then goto skip end
@@ -131,12 +133,14 @@ for _, raw_mc_list in ipairs(mc_lists) do
                 end
                 local match = nil
                 for k2, v2 in pairs(mc_list) do
-                    if k2:match(pattern.match .. "%.png") then
-                        match = mc_list[pattern.match .. ".png"]
+                    local k2m = k2:match(pattern.match .. "%.png")
+                    if k2m then
+                        -- match = mc_list[k2m]
+                        match = k2m
                         -- print(match)
                         break
-                    elseif pattern.match:match("compass") and v2:match("compass") then
-                        print(pattern.match .. ", " .. k2 .. "")
+                    -- elseif pattern.match:match("compass") and v2:match("compass") then
+                    --     print(pattern.match .. ", " .. k2 .. "")
                     end
                 end
                 if match ~= nil then
@@ -145,6 +149,8 @@ for _, raw_mc_list in ipairs(mc_lists) do
                     matched:write("\"" .. line .. ".png\", \"" .. output .. "\"\n")
                     found_match = true
                     break
+                else
+                    -- print(line .. ", " .. pattern.match)
                 end
                 ::continue::
             end
