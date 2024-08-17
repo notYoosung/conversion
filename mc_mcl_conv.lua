@@ -1,3 +1,25 @@
+--https://forum.cockos.com/showpost.php?s=1159741da808e9b94bcf480f84c6bc78&p=2360581&postcount=3
+local function CopyFile(old_path, new_path)
+    local old_file = io.open(old_path, "rb")
+    local new_file = io.open(new_path, "wb")
+    local old_file_sz, new_file_sz = 0, 0
+    if not old_file or not new_file then
+        return false
+    end
+    while true do
+        local block = old_file:read(2 ^ 13)
+        if not block then
+            old_file_sz = old_file:seek("end")
+            break
+        end
+        new_file:write(block)
+    end
+    old_file:close()
+    new_file_sz = new_file:seek("end")
+    new_file:close()
+    return new_file_sz == old_file_sz
+end
+
 local mcl = io.open("./mcl_list.txt", "r")
 local matched = io.open("./matched.txt", "w")
 local unmatched = io.open("./unmatched.txt", "w")
@@ -147,6 +169,7 @@ for _, raw_mc_list in ipairs(mc_lists) do
                     -- print(pattern.match)
                     local output = match--pattern.output or match or ""
                     matched:write("\"" .. line .. ".png\", \"" .. output .. "\"\n")
+                    CopyFile(output, "./tp/" .. line)
                     found_match = true
                     break
                 else
@@ -169,3 +192,5 @@ end
 mcl:close()
 matched:close()
 unmatched:close()
+
+
