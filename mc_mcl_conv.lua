@@ -83,21 +83,107 @@ local function split(inputstr, sep)
 end
 if mcl ~= nil then
     for mcl_line in mcl:lines() do
+        local un_mcl_line = mcl_line:gsub("(mcl_[a-z]-_)", "")
+        local un_default_line = mcl_line:gsub("(default_)", "")
+        local line_split = split(mcl_line, "_")
+        local un_mcl_line_split = split(mcl_line:gsub("(mcl_%a-_)", ""), "_")
+        local un_farming_line = mcl_line:gsub("(farming_)", "")
         local patterns = {
             {
                 match = mcl_line,
                 -- cond = true,
                 -- output = "",
-            }
+            },
+            {
+                match = un_mcl_line,
+                -- cond = true,
+                -- output = "",
+            },
+            {
+                match = (line_split[2] or "") .. "_" .. (line_split[1] or ""),
+                cond = #line_split == 2,
+                -- output = "",
+            },
+            {
+                match = mcl_line:gsub("mcl_", ""),
+                -- cond = not line:match("copper"),
+                -- output = "%1",
+            },
+            {
+                match = un_mcl_line,
+                cond = not mcl_line:match("copper"),
+                -- output = "%1",
+            },
+            {
+                match = (un_mcl_line_split[2] or "") .. "_" .. (un_mcl_line_split[1] or ""),
+                cond = #un_mcl_line_split == 2,
+                -- output = "",
+            },
+            {
+                match = (un_mcl_line_split[2] or "") ..
+                    "_" .. (un_mcl_line_split[3] or "") .. "_" .. (un_mcl_line_split[1] or ""),
+                cond = #un_mcl_line_split == 3,
+                -- output = "",
+            },
+            {
+                match = mcl_line:gsub("mcl_copper_", "copper_"),
+                -- cond = ,
+                -- output = "",
+            },
+            {
+                match = mcl_line:gsub("xpanes_top_glass_(.+)", function(s)
+                    -- print(s)
+                    return s .. "_stained_glass"
+                end)
+            },
+            {
+                match = un_default_line,
+                -- cond = ,
+                -- output = "%1",
+            },
+            {
+                match = "mcl_potions_effect_(.*)",
+                -- cond = ,
+                -- output = "",
+            },
+            {
+                match = un_farming_line,
+                -- cond = ,
+                -- output = "%1",
+            },
+            {
+                match = "mcl_boats_(.*)",
+                -- cond = ,
+                -- output = "%1",
+            },
+            {
+                match = "mcl_compass_(.*)",
+                -- cond = ,
+                -- output = "%1",
+            },
+            {
+                match = "mcl_%a+_" .. (line_split[2] or "") .. "_" .. line_split[1],
+                cond = #line_split == 2,
+                -- output = "",
+            },
+            { match = mcl_line:gsub("default_tool_wood", "wood_"), },
+            { match = mcl_line:gsub("default_tool_stone", "stone_"), },
+            { match = mcl_line:gsub("default_tool_steel", "steel_"), },
+            { match = mcl_line:gsub("default_tool_gold", "gold_"), },
+            { match = mcl_line:gsub("default_tool_diamond", "diamond_"), },
+            { match = mcl_line:gsub("default_tool_netherite", "netherite_"), },
+            { match = mcl_line:gsub("xpanes_top_iron", "iron_bars"), },
+            { match = mcl_line:gsub("mobs_mc_(.*)", "%1"), },
         }
         for k_filedir, filedir in ipairs(mc_dirlist) do
             local undir = filedir:match(".*/([^/]-%.png)")
             if undir ~= nil then
                 for k_pattern, pattern in ipairs(patterns) do
+                    -- print(pattern.match)
                     local match = undir:match(pattern.match)
                     if match then
-                        print(match)
-                        CopyFile(filedir, "./tp/" .. match)
+                        -- print(match)
+                        CopyFile(filedir, "./tp/" .. mcl_line)
                         break
                     end
                 end
