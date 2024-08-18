@@ -1,3 +1,40 @@
+function scandir(directory)
+    local i, t, popen = 0, {}, io.popen
+    local pfile = popen('ls "' .. directory .. '"')
+    for filename in pfile:lines() do
+        i = i + 1
+        t[i] = filename
+    end
+    pfile:close()
+    return t
+end
+function recursive_scandir(directory)
+    local i, t, popen = 0, {}, io.popen
+    local pfile = popen('ls "' .. directory .. '"')
+    for filename in pfile:lines() do
+        if filename:match("%.png$") then
+            i = i + 1
+            t[i] = directory .. "/" .. filename
+        elseif filename:match("%.") then
+        else
+            local subdir = recursive_scandir(directory .. "/" .. filename)
+            for _, v in ipairs(subdir) do
+                i = i + 1
+                t[i] = v
+            end
+        end
+    end
+    pfile:close()
+    return t
+end
+
+-- scandir("./textures")
+local mc_dirs = {
+    "/entity",
+}
+local mc_dirlist = recursive_scandir("./textures" .. mc_dirs[1])
+
+
 --https://forum.cockos.com/showpost.php?s=1159741da808e9b94bcf480f84c6bc78&p=2360581&postcount=3
 local function CopyFile(old_path, new_path)
     local old_file = io.open(old_path, "rb")
@@ -26,12 +63,12 @@ local unmatched = io.open("./unmatched.txt", "w")
 local function open_mc_list(name)
     return io.open("./mc_list_" .. name .. ".txt", "r")
 end
-local mc_lists = {
-    open_mc_list("blocks"),
-    open_mc_list("mob_effect"),
-    open_mc_list("item"),
-    open_mc_list("entity"),
-}
+-- local mc_lists = {
+--     open_mc_list("blocks"),
+--     open_mc_list("mob_effect"),
+--     open_mc_list("item"),
+--     open_mc_list("entity"),
+-- }
 
 -- https://stackoverflow.com/a/7615129
 local function split(inputstr, sep)
@@ -44,6 +81,37 @@ local function split(inputstr, sep)
     end
     return t
 end
+if mcl ~= nil then
+    for mcl_line in mcl:lines() do
+        local patterns = {
+            {
+                match = mcl_line,
+                -- cond = true,
+                -- output = "",
+            }
+        }
+        for k_filedir, filedir in ipairs(mc_dirlist) do
+            local undir = filedir:match(".*/([^/]-%.png)")
+            if undir ~= nil then
+                for k_pattern, pattern in ipairs(patterns) do
+                    local match = undir:match(pattern.match)
+                    if match then
+                        print(match)
+                        CopyFile(filedir, "./tp/" .. match)
+                        break
+                    end
+                end
+            else
+                -- print(filedir:match(".*/([^/]-%.png)"))
+                
+            end
+            -- print(undir)
+        end
+    end
+end
+
+
+--[[
 
 for _, raw_mc_list in ipairs(mc_lists) do
     if raw_mc_list ~= nil and mcl ~= nil and matched ~= nil and unmatched ~= nil then
@@ -188,9 +256,8 @@ for _, raw_mc_list in ipairs(mc_lists) do
         raw_mc_list:close()
     end
 end
-
+--]]
 mcl:close()
 matched:close()
 unmatched:close()
-
 
