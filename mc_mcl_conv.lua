@@ -95,17 +95,12 @@ if mcl ~= nil then
                 -- output = "",
             },
             {
-                match = un_mcl_line,
-                -- cond = true,
-                -- output = "",
-            },
-            {
                 match = (line_split[2] or "") .. "_" .. (line_split[1] or ""),
                 cond = #line_split == 2,
                 -- output = "",
             },
             {
-                match = mcl_line:gsub("mcl_", ""),
+                match = "mcl_(.*)",
                 -- cond = not line:match("copper"),
                 -- output = "%1",
             },
