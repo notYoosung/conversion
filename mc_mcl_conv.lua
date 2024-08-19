@@ -1,4 +1,4 @@
-function scandir(directory)
+local function scandir(directory)
     local i, t, popen = 0, {}, io.popen
     local pfile = popen('ls "' .. directory .. '"')
     for filename in pfile:lines() do
@@ -8,7 +8,7 @@ function scandir(directory)
     pfile:close()
     return t
 end
-function recursive_scandir(directory)
+local function recursive_scandir(directory)
     local i, t, popen = 0, {}, io.popen
     local pfile = popen('ls "' .. directory .. '"')
     for filename in pfile:lines() do
@@ -30,7 +30,7 @@ end
 
 -- scandir("./textures")
 local mc_dirs = {
-    "/entity",
+    "",
 }
 local mc_dirlist = recursive_scandir("./textures" .. mc_dirs[1])
 
@@ -81,19 +81,15 @@ local function split(inputstr, sep)
     end
     return t
 end
-if mcl ~= nil then
+if mcl ~= nil and matched ~= nil and unmatched ~= nil then
     for mcl_line in mcl:lines() do
         local un_mcl_line = mcl_line:gsub("(mcl_[a-z]-_)", "")
         local un_default_line = mcl_line:gsub("(default_)", "")
         local line_split = split(mcl_line, "_")
         local un_mcl_line_split = split(mcl_line:gsub("(mcl_%a-_)", ""), "_")
         local un_farming_line = mcl_line:gsub("(farming_)", "")
+        -- print(mcl_line:gsub("default_tool_wood", "wood_"))
         local patterns = {
-            {
-                match = mcl_line,
-                -- cond = true,
-                -- output = "",
-            },
             {
                 match = (line_split[2] or "") .. "_" .. (line_split[1] or ""),
                 cond = #line_split == 2,
@@ -161,32 +157,51 @@ if mcl ~= nil then
                 cond = #line_split == 2,
                 -- output = "",
             },
-            { match = mcl_line:gsub("default_tool_wood", "wood_"), },
-            { match = mcl_line:gsub("default_tool_stone", "stone_"), },
-            { match = mcl_line:gsub("default_tool_steel", "steel_"), },
-            { match = mcl_line:gsub("default_tool_gold", "gold_"), },
-            { match = mcl_line:gsub("default_tool_diamond", "diamond_"), },
-            { match = mcl_line:gsub("default_tool_netherite", "netherite_"), },
-            { match = mcl_line:gsub("xpanes_top_iron", "iron_bars"), },
-            { match = mcl_line:gsub("mobs_mc_(.*)", "%1"), },
+            {match = mcl_line:gsub("default_tool_wood", "wood_"), },
+            {match = mcl_line:gsub("default_tool_stone", "stone_"), },
+            {match = mcl_line:gsub("default_tool_steel", "steel_"), },
+            {match = mcl_line:gsub("default_tool_gold", "gold_"), },
+            {match = mcl_line:gsub("default_tool_diamond", "diamond_"),},
+            {match = mcl_line:gsub("default_tool_netherite", "netherite_"), },
+            {
+                match = mcl_line:gsub("xpanes_top_iron", "iron_bars"), },
+            {
+                match = mcl_line:gsub("mobs_mc_", ""),
+                cond = mcl_line:match("entity")
+            },
+            {
+                match = mcl_line,
+                -- cond = true,
+                -- output = "",
+            },
         }
+        local is_matched = false
         for k_filedir, filedir in ipairs(mc_dirlist) do
-            local undir = filedir:match(".*/([^/]-%.png)")
+            local undir = filedir:match(".*/([^/]+%.png)")
             if undir ~= nil then
                 for k_pattern, pattern in ipairs(patterns) do
                     -- print(pattern.match)
-                    local match = undir:match(pattern.match)
-                    if match then
-                        -- print(match)
-                        CopyFile(filedir, "./tp/" .. mcl_line)
-                        break
+                    if pattern.cond == nil or pattern.cond then
+                        
+                        local match = undir:match(pattern.match)
+                        if match then
+                            -- print(match)
+                            matched:write("\"" .. filedir .. "\", \"" .. mcl_line .. "\"\n")
+                            CopyFile(filedir, "./tp/" .. mcl_line)
+                            is_matched = true
+                            break
+                        end
                     end
                 end
+                
             else
                 -- print(filedir:match(".*/([^/]-%.png)"))
                 
             end
             -- print(undir)
+        end
+        if not is_matched then
+            unmatched:write("\"" .. mcl_line .. "\"\n")
         end
     end
 end
