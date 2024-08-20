@@ -91,6 +91,21 @@ if mcl ~= nil and matched ~= nil and unmatched ~= nil then
         -- print(mcl_line:gsub("default_tool_wood", "wood_"))
         local patterns = {
             {
+                match = un_default_line,
+                -- cond = ,
+                -- output = "%1",
+            },
+            {
+                match = mcl_line,
+                -- cond = true,
+                -- output = "",
+            },
+            {
+                match = un_mcl_line,
+                cond = not mcl_line:match("copper"),
+                -- output = "%1",
+            },
+            {
                 match = (line_split[2] or "") .. "_" .. (line_split[1] or ""),
                 cond = #line_split == 2,
                 -- output = "",
@@ -98,11 +113,6 @@ if mcl ~= nil and matched ~= nil and unmatched ~= nil then
             {
                 match = "mcl_(.*)",
                 -- cond = not line:match("copper"),
-                -- output = "%1",
-            },
-            {
-                match = un_mcl_line,
-                cond = not mcl_line:match("copper"),
                 -- output = "%1",
             },
             {
@@ -125,12 +135,8 @@ if mcl ~= nil and matched ~= nil and unmatched ~= nil then
                 match = mcl_line:gsub("xpanes_top_glass_(.+)", function(s)
                     -- print(s)
                     return s .. "_stained_glass"
-                end)
-            },
-            {
-                match = un_default_line,
-                -- cond = ,
-                -- output = "%1",
+                end),
+                -- cond = mcl_line:match("glass"),
             },
             {
                 match = "mcl_potions_effect_(.*)",
@@ -138,17 +144,22 @@ if mcl ~= nil and matched ~= nil and unmatched ~= nil then
                 -- output = "",
             },
             {
-                match = un_farming_line,
-                -- cond = ,
-                -- output = "%1",
-            },
-            {
                 match = "mcl_boats_(.*)",
-                -- cond = ,
+                cond = mcl_line:match("boat"),
                 -- output = "%1",
             },
             {
                 match = "mcl_compass_(.*)",
+                cond = mcl_line:match("compass"),
+                -- output = "%1",
+            },
+            {
+                match = "mcl_deepslate_(.*)",
+                cond = mcl_line:match("deepslate"),
+                -- output = "%1",
+            },
+            {
+                match = un_farming_line,
                 -- cond = ,
                 -- output = "%1",
             },
@@ -157,22 +168,18 @@ if mcl ~= nil and matched ~= nil and unmatched ~= nil then
                 cond = #line_split == 2,
                 -- output = "",
             },
-            {match = mcl_line:gsub("default_tool_wood", "wood_"), },
-            {match = mcl_line:gsub("default_tool_stone", "stone_"), },
-            {match = mcl_line:gsub("default_tool_steel", "steel_"), },
-            {match = mcl_line:gsub("default_tool_gold", "gold_"), },
-            {match = mcl_line:gsub("default_tool_diamond", "diamond_"),},
-            {match = mcl_line:gsub("default_tool_netherite", "netherite_"), },
+            { match = mcl_line:gsub("default_tool_wood", "wood_"), },
+            { match = mcl_line:gsub("default_tool_stone", "stone_"), },
+            { match = mcl_line:gsub("default_tool_steel", "steel_"), },
+            { match = mcl_line:gsub("default_tool_gold", "gold_"), },
+            { match = mcl_line:gsub("default_tool_diamond", "diamond_"), },
+            { match = mcl_line:gsub("default_tool_netherite", "netherite_"), },
             {
-                match = mcl_line:gsub("xpanes_top_iron", "iron_bars"), },
+                match = mcl_line:gsub("xpanes_top_iron", "iron_bars"),
+            },
             {
                 match = mcl_line:gsub("mobs_mc_", ""),
                 cond = mcl_line:match("entity")
-            },
-            {
-                match = mcl_line,
-                -- cond = true,
-                -- output = "",
             },
         }
         local is_matched = false
@@ -182,7 +189,6 @@ if mcl ~= nil and matched ~= nil and unmatched ~= nil then
                 for k_pattern, pattern in ipairs(patterns) do
                     -- print(pattern.match)
                     if pattern.cond == nil or pattern.cond then
-                        
                         local match = undir:match(pattern.match)
                         if match then
                             -- print(match)
@@ -193,10 +199,8 @@ if mcl ~= nil and matched ~= nil and unmatched ~= nil then
                         end
                     end
                 end
-                
             else
                 -- print(filedir:match(".*/([^/]-%.png)"))
-                
             end
             -- print(undir)
         end
@@ -219,7 +223,7 @@ for _, raw_mc_list in ipairs(mc_lists) do
         end
         -- o:write(i_read)
         local patterns = {}
-        
+
         for line in mcl:lines() do
             line = line:gsub("%.png", "")
             local un_mcl_line = line:gsub("(mcl_[a-z]-_)", "")
@@ -348,7 +352,7 @@ for _, raw_mc_list in ipairs(mc_lists) do
             -- o:write(line .. "\n")
 
         end
-        
+
         raw_mc_list:close()
     end
 end
@@ -356,4 +360,3 @@ end
 mcl:close()
 matched:close()
 unmatched:close()
-
