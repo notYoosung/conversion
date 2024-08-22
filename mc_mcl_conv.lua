@@ -133,8 +133,18 @@ if mcl ~= nil and matched ~= nil and unmatched ~= nil then
             },
             {
                 match = mcl_line:gsub("mcl_deepslate_", "deepslate_"),
-                -- cond = ,
-                -- output = "",
+            },
+            {
+                match = mcl_line:gsub("mcl_deepslate_top", "deepslate"),
+            },
+            {
+                match = mcl_line:gsub("mcl_(deepslate_.*)", function(s)
+                    local s_split = split(s, "_")
+                    local s_new = s_split[1] .. "_" .. s_split[#s_split]
+
+                    return s_new
+                end),
+                cond = mcl_line:match("deepslate")
             },
             {
                 match = mcl_line:gsub("xpanes_top_glass_(.+)", function(s)
@@ -158,11 +168,11 @@ if mcl ~= nil and matched ~= nil and unmatched ~= nil then
                 cond = mcl_line:match("compass"),
                 -- output = "%1",
             },
-            {
-                match = "mcl_deepslate_(.*)",
-                cond = mcl_line:match("deepslate"),
-                -- output = "%1",
-            },
+            -- {
+            --     match = "mcl_deepslate_(.*)",
+            --     cond = mcl_line:match("deepslate"),
+            --     -- output = "%1",
+            -- },
             {
                 match = un_farming_line,
                 -- cond = ,
