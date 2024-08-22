@@ -1,2 +1,7 @@
 /.DS_Store
 /.vscode
+textures/.DS_Store
+textures/entity/.DS_Store
+textures/entity/zombie_villager/.DS_Store
+textures/entity/villager/.DS_Store
+textures/entity/player/.DS_Store
