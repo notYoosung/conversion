@@ -181,6 +181,11 @@ if mcl ~= nil and matched ~= nil and unmatched ~= nil then
                 match = mcl_line:gsub("mobs_mc_", ""),
                 cond = mcl_line:match("entity")
             },
+            {
+                match = mcl_line:gsub("mcl_bows_(%a*)bow_", "%1bow_pulling_"),
+                -- cond = ,
+                -- output = "",
+            },
         }
         local is_matched = false
         for k_filedir, filedir in ipairs(mc_dirlist) do
