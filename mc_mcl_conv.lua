@@ -189,7 +189,7 @@ if mcl ~= nil and matched ~= nil and unmatched ~= nil then
                 for k_pattern, pattern in ipairs(patterns) do
                     -- print(pattern.match)
                     if pattern.cond == nil or pattern.cond then
-                        local match = undir:match(pattern.match)
+                        local match = undir:match("^" .. pattern.match)
                         if match then
                             -- print(match)
                             matched:write("\"" .. filedir .. "\", \"" .. mcl_line .. "\"\n")
