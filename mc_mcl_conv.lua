@@ -39,7 +39,7 @@ for _, raw_mc_list in ipairs(mc_lists) do
             local un_mcl_line = line:gsub("(mcl_[a-z]-_)", "")
             local un_default_line = line:gsub("(default_)", "")
             local line_split = split(line, "_")
-            local un_mcl_line_split = split(line:gsub("(mcl_%a-_)", ""), "_")
+            local un_mcl_line_split = split(line:gsub("mcl_%a-_", ""), "_")
             local un_farming_line = line:gsub("(farming_)", "")
             -- print(mc_list[line:gsub("mobs_mc_(.*)", "%1") .. ".png"])
             patterns = {
@@ -106,7 +106,7 @@ for _, raw_mc_list in ipairs(mc_lists) do
                     -- output = "%1",
                 },
                 {
-                    match = line:gsub("mcl_compass_(.*)", "%1"),
+                    match = line:gsub("mcl_compass_", ""),
                     -- cond = ,
                     -- output = "%1",
                 },
@@ -123,6 +123,16 @@ for _, raw_mc_list in ipairs(mc_lists) do
                 { match = line:gsub("default_tool_netherite", "netherite_"), },
                 { match = line:gsub("xpanes_top_iron", "iron_bars"), },
                 { match = line:gsub("mobs_mc_(.*)", "%1"), },
+                {
+                    match = line:gsub("mobs_mc_", ""),
+                    -- cond = ,
+                    -- output = "",
+                },
+                {
+                    match = line:gsub("extra_mobs_", ""),
+                    -- cond = ,
+                    -- output = "",
+                },
             }
             local found_match = false
             if line:match("mcmeta") then goto skip end
@@ -132,6 +142,7 @@ for _, raw_mc_list in ipairs(mc_lists) do
                     goto continue
                 end
                 local match = nil
+                print(pattern.match)
                 for k2, v2 in pairs(mc_list) do
                     local k2m = k2:match(pattern.match .. "%.png")
                     if k2m then
@@ -165,7 +176,6 @@ for _, raw_mc_list in ipairs(mc_lists) do
         raw_mc_list:close()
     end
 end
-
-mcl:close()
-matched:close()
-unmatched:close()
+if mcl then mcl:close() end
+if matched then matched:close() end
+if unmatched then unmatched:close() end
