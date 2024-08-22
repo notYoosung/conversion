@@ -1,6 +1,6 @@
 local function scandir(directory)
     local i, t, popen = 0, {}, io.popen
-    local pfile = popen('ls "' .. directory .. '"')
+    local pfile = assert(popen('ls "' .. directory .. '"'))
     for filename in pfile:lines() do
         i = i + 1
         t[i] = filename
@@ -10,7 +10,7 @@ local function scandir(directory)
 end
 local function recursive_scandir(directory)
     local i, t, popen = 0, {}, io.popen
-    local pfile = popen('ls "' .. directory .. '"')
+    local pfile = assert(popen('ls "' .. directory .. '"'))
     for filename in pfile:lines() do
         if filename:match("%.png$") then
             i = i + 1
