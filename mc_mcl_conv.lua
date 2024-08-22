@@ -132,6 +132,11 @@ if mcl ~= nil and matched ~= nil and unmatched ~= nil then
                 -- output = "",
             },
             {
+                match = mcl_line:gsub("mcl_deepslate_", "deepslate_"),
+                -- cond = ,
+                -- output = "",
+            },
+            {
                 match = mcl_line:gsub("xpanes_top_glass_(.+)", function(s)
                     -- print(s)
                     return s .. "_stained_glass"
