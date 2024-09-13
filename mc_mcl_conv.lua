@@ -213,7 +213,7 @@ if mcl ~= nil and matched ~= nil and unmatched ~= nil then
                         if match then
                             -- print(match)
                             matched:write("\"" .. filedir .. "\", \"" .. mcl_line .. "\"\n")
-                            CopyFile(filedir, "./tp/" .. mcl_line)
+                            CopyFile(filedir, "./texturepack_mc/" .. mcl_line)
                             is_matched = true
                             break
                         end
